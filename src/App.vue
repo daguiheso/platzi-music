@@ -6,6 +6,8 @@
     select(v-model="selectedCountry")
       option(v-for="country in countries" :value="country.name.toLowerCase()") {{ country.name }}
 
+    spinner(v-show="loading")
+
     ul
       artist(v-for="artist in artists" :artist="artist" :key="artist.mbid")
 </template>
@@ -13,6 +15,7 @@
 <script>
 import getArtists from './api'
 import Artist from './components/Artist'
+import Spinner from './components/Spinner'
 import countries from './api/countries'
 
 export default {
@@ -21,18 +24,23 @@ export default {
     return {
       artists: [],
       countries,
-      selectedCountry: 'colombia'
+      selectedCountry: 'colombia',
+      loading: true
     }
   },
   components: {
-    Artist
+    Artist,
+    Spinner
   },
   methods: {
     refreshArtists() {
+      this.loading = true;
+      this.artists = []
       const self = this
       getArtists(this.selectedCountry)
         .then(function(artists) {
           self.artists = artists
+          self.loading = false;
         })
     }
   },
